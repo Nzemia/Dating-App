@@ -23,16 +23,31 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
+        "expo-router",
+        [
+            "expo-splash-screen",
+            {
+                "image": "./assets/images/splash-icon.png",
+                "imageWidth": 200,
+                "resizeMode": "contain",
+                "backgroundColor": "#ffffff"
+            }
+        ],
+        [
+            "expo-font",
+            {
+                "fonts": [
+                    "./assets/fonts/Outfit-Bold.ttf",
+                    "./assets/fonts/Outfit-ExtraBold.ttf",
+                    "./assets/fonts/Outfit-Medium.ttf",
+                    "./assets/fonts/Outfit-Black.ttf",
+                    "./assets/fonts/Outfit-Light.ttf",
+                    "./assets/fonts/Outfit-Regular.ttf",
+                    "./assets/fonts/Outfit-SemiBold.ttf"
+
+                ]
+            }
+        ]
     ],
     "experiments": {
       "typedRoutes": true

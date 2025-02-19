@@ -1,39 +1,59 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import React from "react"
+import { useState, useEffect } from "react"
+import { View, ActivityIndicator } from "react-native"
+import * as Font from "expo-font"
+import { Slot } from "expo-router"
+import { StatusBar } from "expo-status-bar"
+import { fontFamily } from "@/constants/fonts"
+import {
+    ThemeProvider,
+    useTheme
+} from "@/constants/ThemeContext"
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const loadFonts = async () => {
+    await Font.loadAsync({
+        [fontFamily.regular]: require("../assets/fonts/Outfit-Regular.ttf"),
+        [fontFamily.bold]: require("../assets/fonts/Outfit-Bold.ttf"),
+        [fontFamily.semiBold]: require("../assets/fonts/Outfit-SemiBold.ttf"),
+        [fontFamily.light]: require("../assets/fonts/Outfit-Light.ttf"),
+        [fontFamily.medium]: require("../assets/fonts/Outfit-Medium.ttf"),
+        [fontFamily.extraBold]: require("../assets/fonts/Outfit-ExtraBold.ttf"),
+        [fontFamily.black]: require("../assets/fonts/Outfit-Black.ttf")
+    })
+}
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+export default function Layout() {
+    const [fontsLoaded, setFontsLoaded] = useState(false)
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+    useEffect(() => {
+        loadFonts().then(() => setFontsLoaded(true))
+    }, [])
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    if (!fontsLoaded) {
+        return (
+            <ActivityIndicator size="large" color="black" />
+        )
     }
-  }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+    return (
+        <ThemeProvider>
+            <ThemedLayout />
+        </ThemeProvider>
+    )
+}
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+function ThemedLayout() {
+    const { theme } = useTheme()
+
+    return (
+        <View
+            style={{
+                flex: 1,
+                backgroundColor: theme.background
+            }}
+        >
+            <StatusBar style={theme.statusBarStyle} />
+            <Slot />
+        </View>
+    )
 }
