@@ -11,6 +11,20 @@ import HomeScreen from "@/screens/HomeScreen"
 import LikeScreen from "@/screens/LikeScreen"
 import ChatScreen from "@/screens/ChatScreen"
 import ProfileScreen from "@/screens/ProfileScreen"
+import BasicInfo from "@/screens/BasicInfo"
+import NameScreen from "@/screens/NameScreen"
+import EmailScreen from "@/screens/EmailScreen"
+import PasswordScreen from "@/screens/PasswordScreen"
+import BirthScreen from "@/screens/BirthScreen"
+import GenderScreen from "@/screens/GenderScreen"
+import LocationScreen from "@/screens/LocationScreen"
+import TypeScreen from "@/screens/TypeScreen"
+import DatingType from "@/screens/DatingType"
+import LookingFor from "@/screens/LookingFor"
+import PhotosScreen from "@/screens/PhotosScreen"
+import PromptScreen from "@/screens/PromptScreen"
+import ShowPrompt from "@/screens/ShowPrompt"
+import PreFinalScreen from "@/screens/PreFinalScreen"
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -132,14 +146,101 @@ function BottomTabs() {
     )
 }
 
+const AuthStack = () => {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="Basic"
+                component={BasicInfo}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Name"
+                component={NameScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Email"
+                component={EmailScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Password"
+                component={PasswordScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Birth"
+                component={BirthScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Location"
+                component={LocationScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Gender"
+                component={GenderScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Type"
+                component={TypeScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Dating"
+                component={DatingType}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="LookingFor"
+                component={LookingFor}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="HomeTown"
+                component={HomeScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Photos"
+                component={PhotosScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Prompt"
+                component={PromptScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="ShowPrompt"
+                component={ShowPrompt}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="PreFinal"
+                component={PreFinalScreen}
+                options={{ headerShown: false }}
+            />
+        </Stack.Navigator>
+    )
+}
+
 function StackNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen
                 name="Main"
-                component={BottomTabs}
+                component={AuthStack}
                 options={{ headerShown: false }}
             />
+            {/* <Stack.Screen
+                name="Main"
+                component={BottomTabs}
+                options={{ headerShown: false }}
+            /> */}
         </Stack.Navigator>
     )
 }
