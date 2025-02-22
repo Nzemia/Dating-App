@@ -14,6 +14,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { useNavigation } from "expo-router"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
+import CustomTextInput from "@/components/TextInput"
+import GoNextButton from "@/components/GoNextButton"
 
 type EmailScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -100,37 +102,17 @@ const NameScreen = () => {
                     </Text>
 
                     {/** Name */}
-                    <TextInput
-                        style={[
-                            styles.input,
-                            {
-                                color: theme.text,
-                                borderColor: theme.text
-                            }
-                        ]}
+                    <CustomTextInput
                         placeholder="Enter your first name"
-                        placeholderTextColor={theme.text}
                         value={firstName}
-                        onChangeText={text =>
-                            setFirstName(text)
-                        }
+                        onChangeText={setFirstName}
                         autoFocus={true}
                     />
                     {/** Last Name */}
-                    <TextInput
-                        style={[
-                            styles.input,
-                            {
-                                color: theme.text,
-                                borderColor: theme.text
-                            }
-                        ]}
+                    <CustomTextInput
                         placeholder="Enter your last name"
-                        placeholderTextColor={theme.text}
                         value={lastName}
-                        onChangeText={text =>
-                            setLastName(text)
-                        }
+                        onChangeText={setLastName}
                         autoFocus={true}
                     />
 
@@ -144,20 +126,8 @@ const NameScreen = () => {
                     </Text>
                 </View>
 
-                <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={{
-                        marginTop: 30,
-                        marginLeft: "auto"
-                    }}
-                    onPress={handleNext}
-                >
-                    <MaterialCommunityIcons
-                        style={{ color: theme.text }}
-                        size={26}
-                        name="arrow-right-bold-circle"
-                    />
-                </TouchableOpacity>
+                {/** Go Next */}
+                <GoNextButton onPress={handleNext} />
             </View>
         </SafeAreaView>
     )
