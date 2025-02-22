@@ -15,6 +15,7 @@ interface CustomTextInputProps extends TextInputProps {
     value: string
     onChangeText: (text: string) => void
     style?: TextStyle
+    numeric?: boolean
     error?: string
     label?: string
 }
@@ -24,11 +25,24 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
     value,
     onChangeText,
     style,
+    numeric = false,
     error,
     label,
     ...rest
 }) => {
     const { theme } = useTheme()
+
+    // Function to handle input changes
+    const handleInputChange = (text: string) => {
+        if (numeric) {
+            const numericRegex = /^[0-9]*$/ 
+            if (numericRegex.test(text)) {
+                onChangeText(text) 
+            }
+        } else {
+            onChangeText(text) 
+        }
+    }
 
     return (
         <View>
@@ -46,7 +60,10 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                     style
                 ]}
                 value={value}
-                onChangeText={onChangeText}
+                onChangeText={handleInputChange}
+                keyboardType={
+                    numeric ? "numeric" : "default"
+                }
                 {...rest}
             />
             {error && (

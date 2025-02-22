@@ -102,6 +102,7 @@ const EmailScreen = () => {
                     placeholder="Enter your email address"
                     value={email}
                     onChangeText={setEmail}
+                    keyboardType="email-address"
                     error={
                         !email
                             ? "Email is required"
