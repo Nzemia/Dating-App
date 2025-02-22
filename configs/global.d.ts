@@ -4,5 +4,6 @@ export type RootStackParamList = {
     Password: undefined
     Birth: undefined
     Location: undefined
+    Gender: undefined
     Type: undefined
 }

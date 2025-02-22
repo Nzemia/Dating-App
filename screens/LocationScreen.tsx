@@ -17,16 +17,16 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
 
-type TypeScreenNavigationProp = NativeStackNavigationProp<
+type GenderScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
-    "Type"
+    "Gender"
 >
 
 const LocationScreen = () => {
     const { theme } = useTheme()
 
     const navigation =
-        useNavigation<TypeScreenNavigationProp>()
+        useNavigation<GenderScreenNavigationProp>()
 
     const [location, setLocation] =
         useState<Location.LocationObject | null>(null)
@@ -47,7 +47,6 @@ const LocationScreen = () => {
     //Get Current Location
     useEffect(() => {
         ;(async () => {
-            // Request location permissions
             let { status } =
                 await Location.requestForegroundPermissionsAsync()
             if (status !== "granted") {
@@ -135,7 +134,7 @@ const LocationScreen = () => {
     }
 
     const handleNext = () => {
-        navigation.navigate("Type")
+        navigation.navigate("Gender")
     }
 
     return (

@@ -18,6 +18,7 @@ type ThemeType = {
     text: string
     primary: string
     secondary: string
+    secondaryText: string
     activeTabColor: string
     inactiveTabColor: string
     statusBarStyle: "auto" | "light" | "dark" | "inverted"
@@ -28,6 +29,7 @@ const lightTheme: ThemeType = {
     text: "#000000",
     primary: "#1E1E1E",
     secondary: "#FFFFFF",
+    secondaryText: "#b5b5b5",
     activeTabColor: "#1E1E1E",
     inactiveTabColor: "#9DB2CE",
     statusBarStyle: "dark"
@@ -38,6 +40,7 @@ const darkTheme: ThemeType = {
     text: "#FFFFFF",
     primary: "#FFFFFF",
     secondary: "#1E1E1E",
+    secondaryText: "#b5b5b5",
     activeTabColor: "#FFFFFF",
     inactiveTabColor: "#9DB2CE",
     statusBarStyle: "light"
