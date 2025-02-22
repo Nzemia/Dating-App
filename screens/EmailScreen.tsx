@@ -103,6 +103,7 @@ const EmailScreen = () => {
                     value={email}
                     onChangeText={setEmail}
                     keyboardType="email-address"
+                    autoFocus={true}
                     error={
                         !email
                             ? "Email is required"
