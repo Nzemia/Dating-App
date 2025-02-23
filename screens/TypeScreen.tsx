@@ -1,12 +1,39 @@
-import { Image, StyleSheet, Text, View } from "react-native"
-import React from "react"
+import {
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    View
+} from "react-native"
+import React, { useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
+import {
+    FontAwesome,
+    MaterialCommunityIcons
+} from "@expo/vector-icons"
 import { fontFamily } from "@/constants/fonts"
+import GoNextButton from "@/components/GoNextButton"
+import { RootStackParamList } from "@/configs/global"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { useNavigation } from "expo-router"
+
+type DatingScreenNavigationProp = NativeStackNavigationProp<
+    RootStackParamList,
+    "Dating"
+>
 
 const TypeScreen = () => {
     const { theme } = useTheme()
+
+    const navigation =
+        useNavigation<DatingScreenNavigationProp>()
+
+    const [type, setType] = useState("")
+
+    const handleNext = () => {
+        navigation.navigate("Dating")
+    }
     return (
         <SafeAreaView
             style={{
@@ -67,6 +94,149 @@ const TypeScreen = () => {
                 >
                     What is your sexuality?
                 </Text>
+
+                <Text
+                    style={[
+                        styles.descriptionText,
+                        { color: theme.text }
+                    ]}
+                >
+                    Users are matched based on their gender
+                    groups. You can always change this
+                    later.
+                </Text>
+
+                {/** Type radios */}
+                <View style={{ marginTop: 30, gap: 10 }}>
+                    {/** Straight */}
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.typeText,
+                                { color: theme.text }
+                            ]}
+                        >
+                            Straight
+                        </Text>
+                        <Pressable
+                            onPress={() =>
+                                setType("Straight")
+                            }
+                        >
+                            <FontAwesome
+                                name="circle"
+                                size={26}
+                                color={
+                                    type === "Straight"
+                                        ? theme.text
+                                        : theme.secondaryText
+                                }
+                            />
+                        </Pressable>
+                    </View>
+                    {/** Lesbian */}
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.typeText,
+                                { color: theme.text }
+                            ]}
+                        >
+                            Lesbian
+                        </Text>
+                        <Pressable
+                            onPress={() =>
+                                setType("Lesbian")
+                            }
+                        >
+                            <FontAwesome
+                                name="circle"
+                                size={26}
+                                color={
+                                    type === "Lesbian"
+                                        ? theme.text
+                                        : theme.secondaryText
+                                }
+                            />
+                        </Pressable>
+                    </View>
+                    {/** BiSexual */}
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.typeText,
+                                { color: theme.text }
+                            ]}
+                        >
+                            Bisexual
+                        </Text>
+                        <Pressable
+                            onPress={() =>
+                                setType("Bisexual")
+                            }
+                        >
+                            <FontAwesome
+                                name="circle"
+                                size={26}
+                                color={
+                                    type === "Bisexual"
+                                        ? theme.text
+                                        : theme.secondaryText
+                                }
+                            />
+                        </Pressable>
+                    </View>
+                    {/** Gay */}
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.typeText,
+                                { color: theme.text }
+                            ]}
+                        >
+                            Gay
+                        </Text>
+                        <Pressable
+                            onPress={() => setType("Gay")}
+                        >
+                            <FontAwesome
+                                name="circle"
+                                size={26}
+                                color={
+                                    type === "Gay"
+                                        ? theme.text
+                                        : theme.secondaryText
+                                }
+                            />
+                        </Pressable>
+                    </View>
+                </View>
+
+                <GoNextButton onPress={handleNext} />
             </View>
         </SafeAreaView>
     )
@@ -80,5 +250,14 @@ const styles = StyleSheet.create({
         fontFamily: fontFamily.semiBold,
         marginTop: 10,
         textAlign: "center"
+    },
+    descriptionText: {
+        fontSize: 12,
+        fontFamily: fontFamily.regular,
+        textAlign: "center"
+    },
+    typeText: {
+        fontSize: 15,
+        fontFamily: fontFamily.regular
     }
 })

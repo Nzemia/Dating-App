@@ -6,4 +6,6 @@ export type RootStackParamList = {
     Location: undefined
     Gender: undefined
     Type: undefined
+    Dating: undefined
+    LookingFor: undefined
 }
