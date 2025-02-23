@@ -25,6 +25,7 @@ import PhotosScreen from "@/screens/PhotosScreen"
 import PromptScreen from "@/screens/PromptScreen"
 import ShowPrompt from "@/screens/ShowPrompt"
 import PreFinalScreen from "@/screens/PreFinalScreen"
+import HomeTown from "@/screens/HomeTown"
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -201,7 +202,7 @@ const AuthStack = () => {
             />
             <Stack.Screen
                 name="HomeTown"
-                component={HomeScreen}
+                component={HomeTown}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

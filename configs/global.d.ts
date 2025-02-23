@@ -8,4 +8,7 @@ export type RootStackParamList = {
     Type: undefined
     Dating: undefined
     LookingFor: undefined
+    HomeTown: undefined
+    Photos: undefined
+    Prompt: undefined
 }
