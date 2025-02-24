@@ -17,8 +17,7 @@ import { RootStackParamList } from "@/configs/global"
 import CustomTextInput from "@/components/TextInput"
 import GoNextButton from "@/components/GoNextButton"
 import {
-    getRegistrationProgress,
-    saveRegistrationProgress
+    getRegistrationProgress,    
 } from "@/utils/RegistrationProgress"
 import useRegistration from "@/hooks/useRegistration"
 

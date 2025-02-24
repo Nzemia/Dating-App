@@ -5,7 +5,7 @@ import {
     Text,
     View
 } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import {
@@ -18,6 +18,8 @@ import GoNextButton from "@/components/GoNextButton"
 import { RootStackParamList } from "@/configs/global"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { useNavigation } from "expo-router"
+import useRegistration from "@/hooks/useRegistration"
+import { getRegistrationProgress } from "@/utils/RegistrationProgress"
 
 type TypeScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -32,8 +34,25 @@ const GenderScreen = () => {
 
     const [gender, setGender] = useState("")
 
-    const handleNext = () => {
-        navigation.navigate("Type")
+    const { validateAndSave, error } =
+        useRegistration("Gender")
+
+    useEffect(() => {
+        getRegistrationProgress("Gender").then(
+            progressData => {
+                if (progressData) {
+                    setGender(progressData.gender || "")
+                }
+            }
+        )
+    }, [])
+
+    const handleNext = async() => {
+        const isValid = await validateAndSave({ gender })
+        if (isValid) {
+            navigation.navigate("Type")
+        }
+        
     }
 
     return (
@@ -208,6 +227,16 @@ const GenderScreen = () => {
                         </Pressable>
                     </View>
                 </View>
+                {error && (
+                    <Text
+                        style={[
+                            styles.errorText,
+                            { color: "red" }
+                        ]}
+                    >
+                        {error}
+                    </Text>
+                )}  
                 {/** check icon */}
                 <View
                     style={{
@@ -262,5 +291,8 @@ const styles = StyleSheet.create({
     visibleText: {
         fontSize: 15,
         fontFamily: fontFamily.regular
+    },
+    errorText: {
+        marginTop: 10
     }
 })

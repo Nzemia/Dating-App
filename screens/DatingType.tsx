@@ -5,7 +5,7 @@ import {
     Text,
     View
 } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import { AntDesign, FontAwesome } from "@expo/vector-icons"
@@ -14,6 +14,8 @@ import GoNextButton from "@/components/GoNextButton"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
+import useRegistration from "@/hooks/useRegistration"
+import { getRegistrationProgress } from "@/utils/RegistrationProgress"
 
 type LookingForScreenNavigationProp =
     NativeStackNavigationProp<
@@ -42,8 +44,28 @@ const DatingType = () => {
         })
     }
 
-    const handleNext = () => {
-        navigation.navigate("LookingFor")
+    const { validateAndSave, error } =
+        useRegistration("Dating")
+    
+    useEffect(() => {
+        getRegistrationProgress("Dating").then(
+            progressData => {
+                if (progressData) {
+                    setDatingPreferences(
+                        progressData.datingPreferences || ""
+                    )
+                }
+            }
+        )
+    }, [])
+
+    const handleNext = async () => {
+        const isValid = await validateAndSave({
+            datingPreferences
+        })
+        if (isValid) {
+            navigation.navigate("LookingFor")
+        }
     }
     return (
         <SafeAreaView
@@ -228,6 +250,16 @@ const DatingType = () => {
                             />
                         </Pressable>
                     </View>
+                    {error && (
+                        <Text
+                            style={[
+                                styles.errorText,
+                                { color: "red" }
+                            ]}
+                        >
+                            {error}
+                        </Text>
+                    )}
                 </View>
 
                 {/** check icon */}
@@ -283,5 +315,8 @@ const styles = StyleSheet.create({
     visibleText: {
         fontSize: 15,
         fontFamily: fontFamily.regular
+    },
+    errorText: {
+        marginTop: 10
     }
 })

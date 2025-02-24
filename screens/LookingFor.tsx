@@ -5,7 +5,7 @@ import {
     Text,
     View
 } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import { fontFamily } from "@/constants/fonts"
@@ -18,7 +18,8 @@ import GoNextButton from "@/components/GoNextButton"
 import { RootStackParamList } from "@/configs/global"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { useNavigation } from "expo-router"
-
+import useRegistration from "@/hooks/useRegistration"
+import { getRegistrationProgress } from "@/utils/RegistrationProgress"
 
 type HomeTownScreenNavigationProp =
     NativeStackNavigationProp<
@@ -26,18 +27,37 @@ type HomeTownScreenNavigationProp =
         "HomeTown"
     >
 
-
 const LookingFor = () => {
-  const { theme } = useTheme()
-  
-  const navigation =
-    useNavigation<HomeTownScreenNavigationProp>()
+    const { theme } = useTheme()
 
-  const [lookingFor, setLookingFor] = useState("")
-  
-  const handleNext = () => { 
-    navigation.navigate("HomeTown")
-  }
+    const navigation =
+        useNavigation<HomeTownScreenNavigationProp>()
+
+    const [lookingFor, setLookingFor] = useState("")
+
+    const { validateAndSave, error } =
+        useRegistration("LookingFor")
+
+    useEffect(() => {
+        getRegistrationProgress("LookingFor").then(
+            progressData => {
+                if (progressData) {
+                    setLookingFor(
+                        progressData.lookingFor || ""
+                    )
+                }
+            }
+        )
+    }, [])
+
+    const handleNext = async () => {
+        const isValid = await validateAndSave({
+            lookingFor
+        })
+        if (isValid) {
+            navigation.navigate("HomeTown")
+        }
+    }
     return (
         <SafeAreaView
             style={{
@@ -323,6 +343,17 @@ const LookingFor = () => {
                     </View>
                 </View>
 
+                {error && (
+                    <Text
+                        style={[
+                            styles.errorText,
+                            { color: "red" }
+                        ]}
+                    >
+                        {error}
+                    </Text>
+                )}
+
                 {/** check icon */}
                 <View
                     style={{
@@ -371,5 +402,8 @@ const styles = StyleSheet.create({
     visibleText: {
         fontSize: 15,
         fontFamily: fontFamily.regular
+    },
+    errorText: {
+        marginTop: 10
     }
 })

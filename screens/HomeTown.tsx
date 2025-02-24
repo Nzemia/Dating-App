@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import { fontFamily } from "@/constants/fonts"
@@ -9,24 +9,40 @@ import GoNextButton from "@/components/GoNextButton"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
+import useRegistration from "@/hooks/useRegistration"
+import { getRegistrationProgress } from "@/utils/RegistrationProgress"
 
-
-type PhotosScreenNavigationProp =
-    NativeStackNavigationProp<
-        RootStackParamList,
-        "Photos"
-    >
+type PhotosScreenNavigationProp = NativeStackNavigationProp<
+    RootStackParamList,
+    "Photos"
+>
 
 const HomeTown = () => {
     const { theme } = useTheme()
 
-  const [homeTown, setHomeTown] = useState("")
-  
+    const [homeTown, setHomeTown] = useState("")
+
     const navigation =
         useNavigation<PhotosScreenNavigationProp>()
 
-  const handleNext = () => {
-      navigation.navigate("Photos")
+    const { validateAndSave, error } =
+        useRegistration("HomeTown")
+
+    useEffect(() => {
+        getRegistrationProgress("HomeTown").then(
+            progressData => {
+                if (progressData) {
+                    setHomeTown(progressData.homeTown || "")
+                }
+            }
+        )
+    }, [])
+
+    const handleNext = async () => {
+        const isValid = await validateAndSave({ homeTown })
+        if (isValid) {
+            navigation.navigate("Photos")
+        }
     }
     return (
         <SafeAreaView
@@ -97,6 +113,17 @@ const HomeTown = () => {
                     autoFocus={true}
                 />
 
+                {error && (
+                    <Text
+                        style={[
+                            styles.errorText,
+                            { color: "red" }
+                        ]}
+                    >
+                        {error}
+                    </Text>
+                )}
+
                 <GoNextButton onPress={handleNext} />
             </View>
         </SafeAreaView>
@@ -111,5 +138,8 @@ const styles = StyleSheet.create({
         fontFamily: fontFamily.semiBold,
         marginTop: 10,
         textAlign: "center"
+    },
+    errorText: {
+        marginTop: 10
     }
 })

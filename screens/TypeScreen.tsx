@@ -5,7 +5,7 @@ import {
     Text,
     View
 } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import {
@@ -17,6 +17,8 @@ import GoNextButton from "@/components/GoNextButton"
 import { RootStackParamList } from "@/configs/global"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { useNavigation } from "expo-router"
+import useRegistration from "@/hooks/useRegistration"
+import { getRegistrationProgress } from "@/utils/RegistrationProgress"
 
 type DatingScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -31,8 +33,24 @@ const TypeScreen = () => {
 
     const [type, setType] = useState("")
 
-    const handleNext = () => {
-        navigation.navigate("Dating")
+    const { validateAndSave, error } =
+        useRegistration("Type")
+
+    useEffect(() => {
+        getRegistrationProgress("Type").then(
+            progressData => {
+                if (progressData) {
+                    setType(progressData.type || "")
+                }
+            }
+        )
+    }, [])
+
+    const handleNext = async () => {
+        const isValid = await validateAndSave({ type })
+        if (isValid) {
+            navigation.navigate("Dating")
+        }
     }
     return (
         <SafeAreaView
@@ -235,6 +253,16 @@ const TypeScreen = () => {
                         </Pressable>
                     </View>
                 </View>
+                {error && (
+                    <Text
+                        style={[
+                            styles.errorText,
+                            { color: "red" }
+                        ]}
+                    >
+                        {error}
+                    </Text>
+                )}
 
                 <GoNextButton onPress={handleNext} />
             </View>
@@ -259,5 +287,8 @@ const styles = StyleSheet.create({
     typeText: {
         fontSize: 15,
         fontFamily: fontFamily.regular
+    },
+    errorText: {
+        marginTop: 10
     }
 })

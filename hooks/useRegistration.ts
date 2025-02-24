@@ -2,7 +2,22 @@ import { useState } from "react"
 import { Alert } from "react-native"
 import { saveRegistrationProgress } from "../utils/RegistrationProgress" // Adjust the import path
 
-type ScreenName = "Name" | "Email" | "Password" | "Birth" | "Location"
+type ScreenName =
+    | "Name"
+    | "Email"
+    | "Password"
+    | "Birth"
+    | "Location"
+    | "Gender"
+    | "Type"
+    | "Dating"
+    | "LookingFor"
+    | "HomeTown"
+    | "Photos"
+    | "imageUrls"
+    | "Prompt"
+    | "ShowPrompt"
+    | "PreFinal"
 
 const useRegistration = (screenName: ScreenName) => {
     const [error, setError] = useState<string | null>(null)
@@ -49,7 +64,7 @@ const useRegistration = (screenName: ScreenName) => {
                         )
                     }
                     break
-                
+
                 case "Location":
                     if (!data.location) {
                         throw new Error(
@@ -57,6 +72,71 @@ const useRegistration = (screenName: ScreenName) => {
                         )
                     }
                     break
+
+                case "Gender":
+                    if (!data.gender) {
+                        throw new Error(
+                            "Please select a valid gender."
+                        )
+                    }
+                    break
+
+                case "Type":
+                    if (!data.type) {
+                        throw new Error(
+                            "You must choose your sexuality"
+                        )
+                    }
+                    break
+
+                case "Dating":
+                    if (!data.datingPreferences) {
+                        throw new Error(
+                            "You must choose your dating preferences"
+                        )
+                    }
+                    break
+
+                case "LookingFor":
+                    if (!data.lookingFor) {
+                        throw new Error(
+                            "You must choose your dating intention"
+                        )
+                    }
+                    break
+
+                case "HomeTown":
+                    if (!data.homeTown) {
+                        throw new Error(
+                            "You must choose your hometown"
+                        )
+                    }
+                    break
+
+                case "Photos":
+                    if (!data.imageUrls || data.imageUrls.length < 3) {
+                        throw new Error(
+                            "You must add at least 3 photos"
+                        )
+                    }
+                    break
+
+                case "Prompt":
+                    if (!data.prompt) {
+                        throw new Error(
+                            "You must enter your prompt"
+                        )
+                    }
+                    break
+
+                case "ShowPrompt":
+                    if (!data.showPrompt) {
+                        throw new Error(
+                            "You must choose if you want to show the prompt"
+                        )
+                    }
+                    break
+
                 
 
                 default:

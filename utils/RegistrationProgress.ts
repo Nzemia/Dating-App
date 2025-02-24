@@ -9,6 +9,15 @@ type RegistrationData = {
     password?: string
     dateOfBirth?: string
     location?: string
+    gender?: string
+    type?: string
+    dating?: string
+    lookingFor?: string
+    homeTown?: string
+    photos?: string
+    imageUrls?: string[]
+    prompt?: string
+    showPrompt?: string
 }
 export const saveRegistrationProgress = async (
     screenName: string,
