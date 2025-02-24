@@ -243,8 +243,8 @@ function StackNavigator() {
                 options={{ headerShown: false }}
             /> */}
             <Stack.Screen
-                name="ShowPrompt"
-                component={ShowPrompt}
+                name="PreFinal"
+                component={PreFinalScreen}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>
