@@ -1,5 +1,11 @@
-import { Image, StyleSheet, Text, View } from "react-native"
-import React, { useState } from "react"
+import {
+    Alert,
+    Image,
+    StyleSheet,
+    Text,
+    View
+} from "react-native"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import { Fontisto } from "@expo/vector-icons"
@@ -9,6 +15,11 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
 import GoNextButton from "@/components/GoNextButton"
+import {
+    getRegistrationProgress,
+    saveRegistrationProgress
+} from "@/utils/RegistrationProgress"
+import useRegistration from "@/hooks/useRegistration"
 
 type PasswordScreenNavigationProp =
     NativeStackNavigationProp<
@@ -22,11 +33,28 @@ const EmailScreen = () => {
     const navigation =
         useNavigation<PasswordScreenNavigationProp>()
 
-    const handleNext = () => {
-        navigation.navigate("Password")
+    const [email, setEmail] = useState("")
+
+    const { validateAndSave, error } =
+        useRegistration("Email")
+
+    useEffect(() => {
+        getRegistrationProgress("Email").then(
+            progressData => {
+                if (progressData) {
+                    setEmail(progressData.email || "")
+                }
+            }
+        )
+    }, [])
+
+    const handleNext = async () => {
+        const isValid = await validateAndSave({ email })
+        if (isValid) {
+            navigation.navigate("Password")
+        }
     }
 
-    const [email, setEmail] = useState("")
     return (
         <SafeAreaView
             style={{
@@ -104,12 +132,23 @@ const EmailScreen = () => {
                     onChangeText={setEmail}
                     keyboardType="email-address"
                     autoFocus={true}
-                    error={
-                        !email
-                            ? "Email is required"
-                            : undefined
-                    }
+                    // error={
+                    //     !email
+                    //         ? "Email is required"
+                    //         : undefined
+                    // }
                 />
+
+                {error && (
+                    <Text
+                        style={[
+                            styles.errorText,
+                            { color: "red" }
+                        ]}
+                    >
+                        {error}
+                    </Text>
+                )}
 
                 <Text
                     style={[
@@ -151,5 +190,8 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 8,
         fontFamily: fontFamily.light
+    },
+    errorText: {
+        marginTop: 10
     }
 })

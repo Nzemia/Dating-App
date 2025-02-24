@@ -232,21 +232,21 @@ const AuthStack = () => {
 function StackNavigator() {
     return (
         <Stack.Navigator>
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="Main"
                 component={AuthStack}
                 options={{ headerShown: false }}
-            /> */}
+            />
             {/* <Stack.Screen
                 name="Main"
                 component={BottomTabs}
                 options={{ headerShown: false }}
             /> */}
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="PreFinal"
                 component={PreFinalScreen}
                 options={{ headerShown: false }}
-            />
+            /> */}
         </Stack.Navigator>
     )
 }

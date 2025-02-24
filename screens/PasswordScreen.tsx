@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useTheme } from "@/constants/ThemeContext"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Entypo } from "@expo/vector-icons"
@@ -9,6 +9,11 @@ import GoNextButton from "@/components/GoNextButton"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
+import {
+    getRegistrationProgress,
+    saveRegistrationProgress
+} from "@/utils/RegistrationProgress"
+import useRegistration from "@/hooks/useRegistration"
 
 type BirthScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -23,8 +28,24 @@ const PasswordScreen = () => {
 
     const [password, setPassword] = useState("")
 
-    const handleNext = () => {
-        navigation.navigate("Birth")
+    const { validateAndSave, error } =
+        useRegistration("Password")
+
+    useEffect(() => {
+        getRegistrationProgress("Password").then(
+            progressData => {
+                if (progressData) {
+                    setPassword(progressData.password || "")
+                }
+            }
+        )
+    }, [])
+
+    const handleNext = async () => {
+        const isValid = await validateAndSave({ password })
+        if (isValid) {
+            navigation.navigate("Birth")
+        }
     }
     return (
         <SafeAreaView
@@ -39,7 +60,7 @@ const PasswordScreen = () => {
                     marginHorizontal: 30
                 }}
             >
-                {/** Password and the 3 dots */}
+                {/** Icon and the 3 dots */}
                 <View
                     style={{
                         flexDirection: "row",
@@ -95,6 +116,17 @@ const PasswordScreen = () => {
                     secureTextEntry={true}
                 />
 
+                {error && (
+                    <Text
+                        style={[
+                            styles.errorText,
+                            { color: "red" }
+                        ]}
+                    >
+                        {error}
+                    </Text>
+                )}
+
                 <Text
                     style={[
                         styles.noteText,
@@ -124,5 +156,8 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 8,
         fontFamily: fontFamily.light
+    },
+    errorText: {
+        marginTop: 10
     }
 })

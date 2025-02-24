@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     View
 } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import { fontFamily } from "@/constants/fonts"
@@ -16,6 +16,11 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import CustomTextInput from "@/components/TextInput"
 import GoNextButton from "@/components/GoNextButton"
+import {
+    getRegistrationProgress,
+    saveRegistrationProgress
+} from "@/utils/RegistrationProgress"
+import useRegistration from "@/hooks/useRegistration"
 
 type EmailScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -30,8 +35,26 @@ const NameScreen = () => {
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
 
-    const handleNext = () => {
-        navigation.navigate("Email")
+    const { validateAndSave, error } =
+        useRegistration("Name")
+
+    useEffect(() => {
+        getRegistrationProgress("Name").then(
+            progressData => {
+                if (progressData) {
+                    setFirstName(
+                        progressData.firstName || ""
+                    )
+                }
+            }
+        )
+    }, [])
+
+    const handleNext = async () => {
+        const isValid = await validateAndSave({ firstName })
+        if (isValid) {
+            navigation.navigate("Email")
+        }
     }
     return (
         <SafeAreaView
@@ -108,6 +131,16 @@ const NameScreen = () => {
                         onChangeText={setFirstName}
                         autoFocus={true}
                     />
+                    {error && (
+                        <Text
+                            style={[
+                                styles.errorText,
+                                { color: "red" }
+                            ]}
+                        >
+                            {error}
+                        </Text>
+                    )}
                     {/** Last Name */}
                     <CustomTextInput
                         placeholder="Enter your last name"
@@ -155,6 +188,9 @@ const styles = StyleSheet.create({
         padding: 10,
         marginTop: 10,
         fontFamily: fontFamily.medium
+    },
+    errorText: {
+        marginTop: 10
     },
     lastNameOptionalText: {
         fontSize: 12,

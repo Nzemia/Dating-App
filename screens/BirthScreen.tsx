@@ -1,11 +1,12 @@
 import {
+    Alert,
     Image,
     StyleSheet,
     Text,
     TextInput,
     View
 } from "react-native"
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useTheme } from "@/constants/ThemeContext"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
@@ -14,6 +15,8 @@ import GoNextButton from "@/components/GoNextButton"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
+import useRegistration from "@/hooks/useRegistration"
+import Calendar from "@/components/Calendar"
 
 type LocationScreenNavigationProp =
     NativeStackNavigationProp<
@@ -27,32 +30,26 @@ const BirthScreen = () => {
     const navigation =
         useNavigation<LocationScreenNavigationProp>()
 
-    const [day, setDay] = useState("")
-    const [month, setMonth] = useState("")
-    const [year, setYear] = useState("")
-    const monthRef = useRef<TextInput>(null)
-    const yearRef = useRef<TextInput>(null)
+    const [dateOfBirth, setDateOfBirth] = useState<
+        string | null
+    >(null)
+    const { validateAndSave, error } =
+        useRegistration("Birth")
 
-    const handleDayChange = (text: string) => {
-        setDay(text)
-        if (text.length === 2) {
-            monthRef.current?.focus()
+    const handleNext = async () => {
+        if (dateOfBirth) {
+            const isValid = await validateAndSave({
+                dateOfBirth
+            })
+            if (isValid) {
+                navigation.navigate("Location")
+            }
+        } else {
+            Alert.alert(
+                "Error",
+                "Please select a valid date of birth."
+            )
         }
-    }
-
-    const handleMonthChange = (text: string) => {
-        setMonth(text)
-        if (text.length === 2) {
-            yearRef.current?.focus()
-        }
-    }
-
-    const handleYearChange = (text: string) => {
-        setYear(text)
-    }
-
-    const handleNext = () => {
-        navigation.navigate("Location")
     }
 
     return (
@@ -68,7 +65,7 @@ const BirthScreen = () => {
                     marginHorizontal: 30
                 }}
             >
-                {/** Calendar and the 3 dots */}
+                {/** Icon and the 3 dots */}
                 <View
                     style={{
                         flexDirection: "row",
@@ -117,73 +114,23 @@ const BirthScreen = () => {
                 </Text>
 
                 {/** Dates */}
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        marginTop: 20,
-                        gap: 40
-                    }}
-                >
-                    {/** Day */}
-                    <TextInput
-                        placeholder="DD"
-                        placeholderTextColor={theme.text}
-                        maxLength={2}
-                        value={day}
-                        onChangeText={handleDayChange}
-                        autoFocus={true}
-                        keyboardType="numeric"
-                        style={[
-                            styles.textInputDayText,
-                            {
-                                color: theme.text,
-                                borderColor: theme.text,
-                                fontSize: day ? 18 : 18
-                            }
-                        ]}
-                    />
+                <Calendar
+                    onDateChange={date =>
+                        setDateOfBirth(date)
+                    }
+                    initialDate={dateOfBirth || undefined}
+                />
 
-                    {/** Month */}
-                    <TextInput
-                        placeholder="MM"
-                        placeholderTextColor={theme.text}
-                        maxLength={2}
-                        value={month}
-                        ref={monthRef}
-                        onChangeText={handleMonthChange}
-                        autoFocus={true}
-                        keyboardType="numeric"
+                {error && (
+                    <Text
                         style={[
-                            styles.textInputMonthText,
-                            {
-                                color: theme.text,
-                                borderColor: theme.text,
-                                fontSize: month ? 18 : 18
-                            }
+                            styles.errorText,
+                            { color: "red" }
                         ]}
-                    />
-                    {/** Year */}
-                    <TextInput
-                        placeholder="YYYY"
-                        placeholderTextColor={theme.text}
-                        maxLength={4}
-                        value={year}
-                        ref={yearRef}
-                        onChangeText={handleYearChange}
-                        autoFocus={true}
-                        keyboardType="numeric"
-                        style={[
-                            styles.textInputYearText,
-
-                            {
-                                color: theme.text,
-                                borderColor: theme.text,
-                                fontSize: year ? 20 : 20
-                            }
-                        ]}
-                    />
-                </View>
+                    >
+                        {error}
+                    </Text>
+                )}
 
                 {/** Go Next */}
                 <GoNextButton onPress={handleNext} />
@@ -201,34 +148,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         textAlign: "center"
     },
-    textInputDayText: {
-        width: 50,
-        borderRadius: 5,
-        borderWidth: 2,
-        padding: 10,
-        marginTop: 10,
-        fontFamily: fontFamily.medium,
-        //fontSize: 12,
-        textAlign: "center"
-    },
-    textInputMonthText: {
-        width: 50,
-        borderRadius: 5,
-        borderWidth: 2,
-        padding: 10,
-        marginTop: 10,
-        fontFamily: fontFamily.medium,
-        //fontSize: 20,
-        textAlign: "center"
-    },
-    textInputYearText: {
-        width: 70,
-        borderRadius: 5,
-        borderWidth: 2,
-        padding: 10,
-        marginTop: 10,
-        fontFamily: fontFamily.medium,
-        //fontSize: 20,
-        textAlign: "center"
+    errorText: {
+        marginTop: 10
     }
 })
