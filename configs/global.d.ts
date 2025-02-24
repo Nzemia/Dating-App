@@ -11,4 +11,6 @@ export type RootStackParamList = {
     HomeTown: undefined
     Photos: undefined
     Prompt: undefined
+    ShowPrompt: undefined
+    PreFinal: undefined
 }
