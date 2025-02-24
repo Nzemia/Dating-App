@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Alert } from "react-native"
 import { saveRegistrationProgress } from "../utils/RegistrationProgress" // Adjust the import path
 
-type ScreenName = "Name" | "Email" | "Password" | "Birth"
+type ScreenName = "Name" | "Email" | "Password" | "Birth" | "Location"
 
 const useRegistration = (screenName: ScreenName) => {
     const [error, setError] = useState<string | null>(null)
@@ -49,6 +49,15 @@ const useRegistration = (screenName: ScreenName) => {
                         )
                     }
                     break
+                
+                case "Location":
+                    if (!data.location) {
+                        throw new Error(
+                            "Please select a valid location."
+                        )
+                    }
+                    break
+                
 
                 default:
                     throw new Error("Invalid screen name.")

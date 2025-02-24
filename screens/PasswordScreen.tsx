@@ -9,10 +9,7 @@ import GoNextButton from "@/components/GoNextButton"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
-import {
-    getRegistrationProgress,
-    saveRegistrationProgress
-} from "@/utils/RegistrationProgress"
+import { getRegistrationProgress } from "@/utils/RegistrationProgress"
 import useRegistration from "@/hooks/useRegistration"
 
 type BirthScreenNavigationProp = NativeStackNavigationProp<

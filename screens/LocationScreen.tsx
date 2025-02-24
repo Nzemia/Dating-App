@@ -16,6 +16,7 @@ import GoNextButton from "@/components/GoNextButton"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
+import useRegistration from "@/hooks/useRegistration"
 
 type GenderScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -43,6 +44,9 @@ const LocationScreen = () => {
     const [address, setAddress] = useState<string | null>(
         null
     )
+
+    const { validateAndSave, error } =
+        useRegistration("Location")
 
     //Get Current Location
     useEffect(() => {
@@ -133,8 +137,11 @@ const LocationScreen = () => {
         )
     }
 
-    const handleNext = () => {
-        navigation.navigate("Gender")
+    const handleNext = async () => {
+        const isValid = await validateAndSave({ location })
+        if (isValid) {
+            navigation.navigate("Gender")
+        }
     }
 
     return (
@@ -267,6 +274,17 @@ const LocationScreen = () => {
                     </Text>
                 </View>
 
+                {error && (
+                    <Text
+                        style={[
+                            styles.errorText,
+                            { color: "red" }
+                        ]}
+                    >
+                        {error}
+                    </Text>
+                )}
+
                 {/** Go Next */}
                 <GoNextButton onPress={handleNext} />
             </View>
@@ -304,5 +322,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         fontFamily: fontFamily.medium,
         fontSize: 15
+    },
+    errorText: {
+        marginTop: 10
     }
 })
