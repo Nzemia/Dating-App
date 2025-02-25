@@ -1,20 +1,24 @@
 import {
+    Alert,
     Image,
     Pressable,
     StyleSheet,
     Text,
     View
 } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import { AntDesign } from "@expo/vector-icons"
 import { fontFamily } from "@/constants/fonts"
-import { useRoute } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "@/configs/global"
 import { useNavigation } from "expo-router"
 import GoNextButton from "@/components/GoNextButton"
+import {
+    getRegistrationProgress,
+    saveRegistrationProgress
+} from "@/utils/RegistrationProgress"
 
 type ShowPromptScreenNavigationProp =
     NativeStackNavigationProp<
@@ -25,16 +29,34 @@ type ShowPromptScreenNavigationProp =
 const PromptScreen = () => {
     const { theme } = useTheme()
 
-    const route = useRoute()
-
     const navigation =
         useNavigation<ShowPromptScreenNavigationProp>()
 
-    
+    const [promptData, setPromptData] = useState<any>(null)
 
-    const handleNext = () => {
-        navigation.navigate("ShowPrompt")
+    useEffect(() => {
+        getRegistrationProgress("Prompt").then(data => {
+            if (data && data.prompt) {
+                setPromptData(data.prompt)
+            }
+        })
+    }, [])
+
+    const handleNext = async () => {
+        try {
+            await saveRegistrationProgress("Prompt", {
+                prompt: promptData
+            })
+            navigation.navigate("ShowPrompt")
+        } catch (error) {
+            console.error("Error saving prompt:", error)
+            Alert.alert(
+                "Error",
+                "Failed to save your prompt. Please try again."
+            )
+        }
     }
+
     return (
         <SafeAreaView
             style={{
@@ -103,13 +125,60 @@ const PromptScreen = () => {
                         gap: 20
                     }}
                 >
-                    {route?.params?.prompts ? (
-                        route?.params?.prompts?.map(
-                            (item, index) => (
+                    {Array.isArray(promptData) &&
+                    promptData.length > 0 ? (
+                        promptData.map((item, index) => (
+                            <Pressable
+                                key={index}
+                                onPress={() =>
+                                    navigation.navigate(
+                                        "ShowPrompt"
+                                    )
+                                }
+                                style={{
+                                    borderColor: "#707070",
+                                    borderWidth: 2,
+                                    justifyContent:
+                                        "center",
+                                    alignItems: "center",
+                                    borderStyle: "dashed",
+                                    borderRadius: 10,
+                                    height: 70
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        fontWeight: "600",
+                                        fontStyle: "italic",
+                                        fontSize: 15
+                                    }}
+                                >
+                                    {item?.question}
+                                </Text>
+                                <Text
+                                    style={{
+                                        fontWeight: "600",
+                                        fontStyle: "italic",
+                                        fontSize: 15,
+                                        marginTop: 3
+                                    }}
+                                >
+                                    {item?.answer}
+                                </Text>
+                            </Pressable>
+                        ))
+                    ) : (
+                        <View>
+                            {[
+                                "Option 1",
+                                "Option 2",
+                                "Option 3"
+                            ].map((label, index) => (
                                 <Pressable
+                                    key={index}
                                     onPress={() =>
                                         navigation.navigate(
-                                            "ShowPrompts"
+                                            "ShowPrompt"
                                         )
                                     }
                                     style={{
@@ -123,11 +192,13 @@ const PromptScreen = () => {
                                         borderStyle:
                                             "dashed",
                                         borderRadius: 10,
-                                        height: 70
+                                        height: 70,
+                                        marginVertical: 5
                                     }}
                                 >
                                     <Text
                                         style={{
+                                            color: "gray",
                                             fontWeight:
                                                 "600",
                                             fontStyle:
@@ -135,10 +206,11 @@ const PromptScreen = () => {
                                             fontSize: 15
                                         }}
                                     >
-                                        {item?.question}
+                                        Select a Prompt
                                     </Text>
                                     <Text
                                         style={{
+                                            color: "gray",
                                             fontWeight:
                                                 "600",
                                             fontStyle:
@@ -147,136 +219,11 @@ const PromptScreen = () => {
                                             marginTop: 3
                                         }}
                                     >
-                                        {item?.answer}
+                                        And write your own
+                                        answer
                                     </Text>
                                 </Pressable>
-                            )
-                        )
-                    ) : (
-                        <View>
-                            <Pressable
-                                onPress={() =>
-                                    navigation.navigate(
-                                        "ShowPrompts"
-                                    )
-                                }
-                                style={{
-                                    borderColor: "#707070",
-                                    borderWidth: 2,
-                                    justifyContent:
-                                        "center",
-                                    alignItems: "center",
-                                    borderStyle: "dashed",
-                                    borderRadius: 10,
-                                    height: 70
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color: "gray",
-                                        fontWeight: "600",
-                                        fontStyle: "italic",
-                                        fontSize: 15
-                                    }}
-                                >
-                                    Select a Prompt
-                                </Text>
-                                <Text
-                                    style={{
-                                        color: "gray",
-                                        fontWeight: "600",
-                                        fontStyle: "italic",
-                                        fontSize: 15,
-                                        marginTop: 3
-                                    }}
-                                >
-                                    And write your own
-                                    answer
-                                </Text>
-                            </Pressable>
-
-                            <Pressable
-                                onPress={() =>
-                                    navigation.navigate(
-                                        "ShowPrompts"
-                                    )
-                                }
-                                style={{
-                                    borderColor: "#707070",
-                                    borderWidth: 2,
-                                    justifyContent:
-                                        "center",
-                                    alignItems: "center",
-                                    borderStyle: "dashed",
-                                    borderRadius: 10,
-                                    height: 70,
-                                    marginVertical: 15
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color: "gray",
-                                        fontWeight: "600",
-                                        fontStyle: "italic",
-                                        fontSize: 15
-                                    }}
-                                >
-                                    Select a Prompt
-                                </Text>
-                                <Text
-                                    style={{
-                                        color: "gray",
-                                        fontWeight: "600",
-                                        fontStyle: "italic",
-                                        fontSize: 15,
-                                        marginTop: 3
-                                    }}
-                                >
-                                    And write your own
-                                    answer
-                                </Text>
-                            </Pressable>
-
-                            <Pressable
-                                onPress={() =>
-                                    navigation.navigate(
-                                        "ShowPrompts"
-                                    )
-                                }
-                                style={{
-                                    borderColor: "#707070",
-                                    borderWidth: 2,
-                                    justifyContent:
-                                        "center",
-                                    alignItems: "center",
-                                    borderStyle: "dashed",
-                                    borderRadius: 10,
-                                    height: 70
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        color: "gray",
-                                        fontWeight: "600",
-                                        fontStyle: "italic",
-                                        fontSize: 15
-                                    }}
-                                >
-                                    Select a Prompt
-                                </Text>
-                                <Text
-                                    style={{
-                                        color: "gray",
-                                        fontWeight: "600",
-                                        fontStyle: "italic",
-                                        fontSize: 15,
-                                        marginTop: 3
-                                    }}
-                                >
-                                    And write your own
-                                    answer
-                                </Text>
-                            </Pressable>
+                            ))}
                         </View>
                     )}
                 </View>

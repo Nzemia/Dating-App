@@ -13,8 +13,7 @@ type ScreenName =
     | "Dating"
     | "LookingFor"
     | "HomeTown"
-    | "Photos"
-    | "imageUrls"
+    | "Photos" 
     | "Prompt"
     | "ShowPrompt"
     | "PreFinal"
@@ -119,15 +118,15 @@ const useRegistration = (screenName: ScreenName) => {
                             "You must add at least 3 photos"
                         )
                     }
-                    break
+                    break              
 
-                case "Prompt":
-                    if (!data.prompt) {
-                        throw new Error(
-                            "You must enter your prompt"
-                        )
-                    }
-                    break
+                // case "Prompt":
+                //     if (!data.prompt) {
+                //         throw new Error(
+                //             "You must enter your prompt"
+                //         )
+                //     }
+                //     break
 
                 case "ShowPrompt":
                     if (!data.showPrompt) {
@@ -136,8 +135,6 @@ const useRegistration = (screenName: ScreenName) => {
                         )
                     }
                     break
-
-                
 
                 default:
                     throw new Error("Invalid screen name.")

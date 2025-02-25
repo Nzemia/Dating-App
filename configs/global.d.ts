@@ -10,7 +10,7 @@ export type RootStackParamList = {
     LookingFor: undefined
     HomeTown: undefined
     Photos: undefined
-    Prompt: undefined
+    Prompt: { prompts: any[] }
     ShowPrompt: undefined
     PreFinal: undefined
 }

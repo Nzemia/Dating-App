@@ -1,7 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-
-
 type RegistrationData = {
     firstName?: string
     lastName?: string
@@ -15,7 +13,6 @@ type RegistrationData = {
     lookingFor?: string
     homeTown?: string
     photos?: string
-    imageUrls?: string[]
     prompt?: string
     showPrompt?: string
 }
@@ -31,7 +28,7 @@ export const saveRegistrationProgress = async (
         )
         console.log(
             "Saved registration progress: ${screenName}"
-        )        
+        )
     } catch (error) {
         console.log(
             "Error saving registration progress",

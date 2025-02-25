@@ -1,5 +1,5 @@
 import {
-    ActivityIndicator,
+    Alert,
     Button,
     Image,
     Pressable,
@@ -8,7 +8,7 @@ import {
     Text,
     View
 } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "@/constants/ThemeContext"
 import { fontFamily } from "@/constants/fonts"
@@ -21,47 +21,112 @@ import GoNextButton from "@/components/GoNextButton"
 import { RootStackParamList } from "@/configs/global"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { useNavigation } from "expo-router"
+import useRegistration from "@/hooks/useRegistration"
+import { getRegistrationProgress } from "@/utils/RegistrationProgress"
+import { pickImageFromGallery } from "@/hooks/imageGalleryPicker"
 
-type PromptScreenNavigationProp =
-    NativeStackNavigationProp<
-        RootStackParamList,
-        "Prompt"
-    >
+type PromptScreenNavigationProp = NativeStackNavigationProp<
+    RootStackParamList,
+    "Prompt"
+>
 
 const PhotosScreen = () => {
-  const { theme } = useTheme()
-  
-  const navigation = useNavigation<PromptScreenNavigationProp>()
+    const { theme } = useTheme()
 
-    const [imageUrls, setImageUrls] = useState<string[]>([
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-    ])
+    const navigation =
+        useNavigation<PromptScreenNavigationProp>()
+
+    const [imageUrls, setImageUrls] = useState<string[]>([])
 
     const [imageUrl, setImageUrl] = useState("")
 
     const [loading, setLoading] = useState(false)
 
-    const handleAddImage = () => {
-        setLoading(true)
-        //find the first empty slot in the array
-        const index = imageUrls.findIndex(url => url === "")
+    const { validateAndSave, error } =
+        useRegistration("Photos")
 
-        if (index !== -1) {
-            const updatedImageUrls = [...imageUrls]
-            updatedImageUrls[index] = imageUrl
-            setImageUrls(updatedImageUrls)
-            setImageUrl("")
+    useEffect(() => {
+        getRegistrationProgress("Photos").then(
+            progressData => {
+                if (
+                    progressData &&
+                    progressData.imageUrls
+                ) {
+                    setImageUrls(progressData.imageUrls)
+                }
+            }
+        )
+    }, [])
+
+    // Handle picking an image from the gallery
+    const handlePickImage = async () => {
+        setLoading(true)
+        try {
+            const uri = await pickImageFromGallery()
+            if (uri && imageUrls.length < 6) {
+                setImageUrls(prev => [...prev, uri])
+            } else if (imageUrls.length >= 6) {
+                Alert.alert(
+                    "Limit reached",
+                    "You can only add up to 6 images."
+                )
+            }
+        } catch (err) {
+            console.error("Error picking image:", err)
+        } finally {
             setLoading(false)
         }
     }
 
-  const handleNext = () => {
-      navigation.navigate("Prompt")
+    // const handleAddImage = () => {
+    //     setLoading(true)
+    //     //find the first empty slot in the array
+    //     const index = imageUrls.findIndex(url => url === "")
+
+    //     if (index !== -1) {
+    //         const updatedImageUrls = [...imageUrls]
+    //         updatedImageUrls[index] = imageUrl
+    //         setImageUrls(updatedImageUrls)
+    //         setImageUrl("")
+    //         setLoading(false)
+    //     }
+    // }
+    const handleAddImage = () => {
+        setLoading(true)
+        if (imageUrl.trim() === "") {
+            Alert.alert(
+                "Error",
+                "Please enter a valid image URL."
+            )
+            setLoading(false)
+            return
+        }
+
+        if (imageUrls.length >= 6) {
+            Alert.alert(
+                "Limit reached",
+                "You can only add up to 6 images."
+            )
+            setLoading(false)
+            return
+        }
+
+        // Add the new URL to the array
+        setImageUrls(prev => [...prev, imageUrl])
+        setImageUrl("")
+        setLoading(false)
+    }
+
+    const handleNext = async () => {
+        const isValid = await validateAndSave({
+            imageUrls: imageUrls.filter(
+                url => url.trim() !== ""
+            )
+        })
+        //const isValid = await validateAndSave({ imageUrls })
+        if (isValid) {
+            navigation.navigate("Prompt")
+        }
     }
     return (
         <SafeAreaView
@@ -141,75 +206,25 @@ const PhotosScreen = () => {
                     </Text>
 
                     {/** Image picker */}
+                    {/** 0-3 images */}
                     <View style={{ marginTop: 20 }}>
-                        {/** 0-3 images */}
                         <View
                             style={{
                                 flexDirection: "row",
                                 justifyContent:
                                     "space-between",
-                                gap: 10
-                            }}
-                        >
-                            {imageUrls
-                                ?.slice(0, 3)
-                                .map((url, index) => (
-                                    <Pressable
-                                        key={index}
-                                        style={{
-                                            borderColor:
-                                                theme.text,
-                                            borderWidth: url
-                                                ? 0
-                                                : 2,
-                                            flex: 1,
-                                            justifyContent:
-                                                "center",
-                                            alignItems:
-                                                "center",
-                                            borderStyle:
-                                                "dashed",
-                                            borderRadius: 10,
-                                            height: 100,
-                                            marginBottom: 30
-                                        }}
-                                    >
-                                        {url ? (
-                                            <Image
-                                                source={{
-                                                    uri: url
-                                                }}
-                                            />
-                                        ) : (
-                                            <EvilIcons
-                                                name="image"
-                                                size={22}
-                                                color={
-                                                    theme.text
-                                                }
-                                            />
-                                        )}
-                                    </Pressable>
-                                ))}
-                        </View>
 
-                        {/** 3 -6 images */}
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent:
-                                    "space-between",
-                                gap: 10
+                                gap: 20
                             }}
                         >
                             {imageUrls
-                                ?.slice(3, 6)
+                                .slice(0, 3)
                                 .map((url, index) => (
                                     <Pressable
                                         key={index}
                                         style={{
                                             borderColor:
-                                                theme.text,
+                                                "#581845",
                                             borderWidth: url
                                                 ? 0
                                                 : 2,
@@ -229,14 +244,75 @@ const PhotosScreen = () => {
                                                 source={{
                                                     uri: url
                                                 }}
+                                                style={{
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    borderRadius: 10,
+                                                    resizeMode:
+                                                        "cover"
+                                                }}
                                             />
                                         ) : (
                                             <EvilIcons
                                                 name="image"
                                                 size={22}
-                                                color={
-                                                    theme.text
-                                                }
+                                                color="black"
+                                            />
+                                        )}
+                                    </Pressable>
+                                ))}
+                        </View>
+                    </View>
+                    {/** 3-6 images */}
+                    <View style={{ marginTop: 20 }}>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent:
+                                    "space-between",
+                                gap: 20
+                            }}
+                        >
+                            {imageUrls
+                                .slice(3, 6)
+                                .map((url, index) => (
+                                    <Pressable
+                                        key={index}
+                                        style={{
+                                            borderColor:
+                                                "#581845",
+                                            borderWidth: url
+                                                ? 0
+                                                : 2,
+                                            flex: 1,
+                                            justifyContent:
+                                                "center",
+                                            alignItems:
+                                                "center",
+                                            borderStyle:
+                                                "dashed",
+                                            borderRadius: 10,
+                                            height: 100
+                                        }}
+                                    >
+                                        {url ? (
+                                            <Image
+                                                source={{
+                                                    uri: url
+                                                }}
+                                                style={{
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    borderRadius: 10,
+                                                    resizeMode:
+                                                        "cover"
+                                                }}
+                                            />
+                                        ) : (
+                                            <EvilIcons
+                                                name="image"
+                                                size={22}
+                                                color="black"
                                             />
                                         )}
                                     </Pressable>
@@ -293,16 +369,28 @@ const PhotosScreen = () => {
                     </View>
 
                     {/** Add Button  */}
-                    {loading ? (
-                        <ActivityIndicator
-                            size="large"
-                            color={theme.text}
-                        />
-                    ) : (
+                    <Button
+                        title="Add Image as URL"
+                        onPress={handleAddImage}
+                    />
+
+                    {/** Pick image from gallery button */}
+                    <View style={{ marginTop: 25 }}>
                         <Button
-                            title={"Add Image"}
-                            onPress={handleAddImage}
+                            title="Pick Image from Gallery"
+                            onPress={handlePickImage}
                         />
+                    </View>
+
+                    {error && (
+                        <Text
+                            style={[
+                                styles.errorText,
+                                { color: "red" }
+                            ]}
+                        >
+                            {error}
+                        </Text>
                     )}
 
                     <GoNextButton onPress={handleNext} />
@@ -329,5 +417,8 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontFamily: fontFamily.regular,
         textAlign: "center"
+    },
+    errorText: {
+        marginTop: 10
     }
 })
